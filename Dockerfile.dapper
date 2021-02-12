@@ -1,42 +1,7 @@
-FROM ubuntu:bionic
-# FROM arm64=arm64v8/ubuntu:bionic
+FROM cr.shanhu.io/bos-forge
 
 # get the apt-cacher proxy set
 ARG APTPROXY=
-
-RUN echo "Acquire::http { Proxy \"$APTPROXY\"; };" >> /etc/apt/apt.conf.d/01proxy \
-    && cat /etc/apt/apt.conf.d/01proxy \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        ca-certificates \
-        cpio \
-        curl \
-        dosfstools \
-        gccgo \
-        genisoimage \
-        gettext \
-        git \
-        isolinux \
-        less \
-        libblkid-dev \
-        libmount-dev \
-        libselinux1-dev \
-        locales \
-        module-init-tools \
-        mtools \
-        openssh-client \
-        pkg-config \
-        qemu \
-        qemu-kvm \
-        rsync \
-        sudo \
-        syslinux-common \
-        vim \
-        wget \
-        xorriso \
-        xz-utils \
-        telnet
 
 ########## Dapper Configuration #####################
 
@@ -146,7 +111,7 @@ RUN echo "... Downloading  ${!KERNEL_URL}"; \
     ;fi
 
 # Download SELinux Policy
-RUN curl -pfL ${SELINUX_POLICY_URL} > ${DOWNLOADS}/$(basename ${SELINUX_POLICY_URL})
+COPY _bits/selinux_policy.29 policy.29
 
 # Install Go
 RUN wget -O - https://storage.googleapis.com/golang/go${GO_VERSION}.linux-${GOARCH}.tar.gz | tar -xzf - -C /usr/local && \

@@ -8,4 +8,4 @@ rm -rf ./scripts/images/vmware/dist
 
 docker rmi $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "rancher|openstack|kexec|os") || true
 docker rmi $(docker images --filter dangling=true -q) || true
-git clean -dxf
+git clean -df
