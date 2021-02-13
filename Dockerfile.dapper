@@ -26,9 +26,6 @@ ARG DISTRIB_ID=BurmillaOS
 ARG KERNEL_VERSION=4.14.218-burmilla
 ARG KERNEL_ARCH=x86
 
-ARG BUILD_DOCKER_URL_amd64=https://get.docker.com/builds/Linux/x86_64/docker-1.10.3
-ARG BUILD_DOCKER_URL_arm64=https://github.com/burmilla/docker/releases/download/v1.10.3-ros1/docker-1.10.3_arm64
-
 ARG OS_RELEASES_YML=https://raw.githubusercontent.com/burmilla/releases/v1.9.x
 
 ARG OS_SERVICES_REPO=https://raw.githubusercontent.com/${OS_REPO}/os-services
@@ -60,10 +57,7 @@ ENV ARCH=${ARCH} \
     HOST_ARCH=${HOST_ARCH} \
     XZ_DEFAULTS="-T0"
 
-ENV BUILD_DOCKER_URL=BUILD_DOCKER_URL_${ARCH} \
-    BUILD_DOCKER_URL_amd64=${BUILD_DOCKER_URL_amd64} \
-    BUILD_DOCKER_URL_arm64=${BUILD_DOCKER_URL_arm64} \
-    DAPPER_HOST_ARCH=${DAPPER_HOST_ARCH} \
+ENV DAPPER_HOST_ARCH=${DAPPER_HOST_ARCH} \
     DISTRIB_ID=${DISTRIB_ID} \
     DOWNLOADS=/usr/src/downloads \
     GOPATH=/go \
@@ -107,7 +101,7 @@ COPY _/linux-${KERNEL_VERSION}-${KERNEL_ARCH}.tar.gz \
 COPY _/selinux_policy.29 policy.29
 
 # Install Go
-COPY _/go1.15.8.linux-amd64.tar.gz /usr/local/go.tar.gz
+COPY _/go1.15.8.linux-${ARCH}.tar.gz /usr/local/go.tar.gz
 RUN tar -C /usr/local -xzf /usr/local/go.tar.gz
 
 # Get and compile trash
@@ -117,15 +111,14 @@ RUN go get github.com/homedrvos/trash
 RUN go get golang.org/x/lint/golint
 
 # Install Host Docker
-RUN curl -fL ${!BUILD_DOCKER_URL} > /usr/bin/docker && \
-    chmod +x /usr/bin/docker
+COPY _/docker-${ARCH} /usr/bin/docker
+RUN chmod +x /usr/bin/docker
 
 # Install dapper
-RUN curl -sL https://releases.rancher.com/dapper/v0.5.4/dapper-`uname -s`-`uname -m | sed 's/arm.*/arm/'` > /usr/bin/dapper && \
-    chmod +x /usr/bin/dapper
+RUN go get github.com/homedrvos/dapper
 
-RUN cd ${DOWNLOADS} && \
-    curl -pfL ${!OS_BASE_URL} | tar xvJf -
+COPY _/os-base_${ARCH}.tar.xz ${DOWNLOADS}/os-base.tar.xz
+RUN tar -xvJf ${DOWNLOADS}/os-base.tar.xz -C ${DOWNLOADS}
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
