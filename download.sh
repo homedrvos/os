@@ -12,7 +12,7 @@ curl -L 'https://github.com/burmilla/os-kernel/releases/download/v4.14.218-burmi
 # curl -L 'https://github.com/burmilla/os-kernel/releases/download/v4.14.218-burmilla/linux-4.14.218-burmilla-arm64.tar.gz' -o linux-4.14.218-burmilla-arm64.tar.gz
 
 # golang
-curl -L 'https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz' -o '_/go1.8.5.linux-amd64.tar.gz'
+# curl -L 'https://storage.googleapis.com/golang/go1.8.5.linux-amd64.tar.gz' -o '_/go1.8.5.linux-amd64.tar.gz'
 curl -L 'https://storage.googleapis.com/golang/go1.15.8.linux-amd64.tar.gz' -o '_/go1.15.8.linux-amd64.tar.gz'
 
 # docker client
