@@ -1,26 +1,14 @@
-FROM ubuntu:16.04
+FROM cr.shanhu.io/bos-kexec
 # FROM arm64=aarch64/ubuntu:16.04 arm=armhf/ubuntu:16.04
-
-# get the apt-cacher proxy set
-ARG APTPROXY=
-
-RUN echo "Acquire::http { Proxy \"$APTPROXY\"; };" >> /etc/apt/apt.conf.d/01proxy \
-    && cat /etc/apt/apt.conf.d/01proxy \
-    && apt-get update \
-    && apt-get install -yq build-essential autoconf libtool gawk alien fakeroot \
-        zlib1g-dev uuid-dev libattr1-dev libblkid-dev libselinux-dev libudev-dev libdevmapper-dev \
-        module-init-tools \
-        parted lsscsi ksh curl git wget
 
 WORKDIR /source
 
 # https://www.kernel.org/pub/linux/utils/kernel/kexec/
 ENV VERSION 2.0.15
-RUN wget https://www.kernel.org/pub/linux/utils/kernel/kexec/kexec-tools-$VERSION.tar.gz \
-    && tar zxvf kexec-tools-$VERSION.tar.gz
+COPY _/kexec-tools-${VERSION}.tar.gz kexec-tools-${VERSION}.tar.gz
+RUN tar zxvf kexec-tools-$VERSION.tar.gz
 
-RUN zcat kexec-tools-$VERSION.tar.gz | tar xvf - \
-  && cd kexec-tools-$VERSION \
+RUN cd kexec-tools-$VERSION \
   && sed 's/loff_t/off_t/g' -i vmcore-dmesg/vmcore-dmesg.c \
   && LDFLAGS=-static ./configure \
   && make \

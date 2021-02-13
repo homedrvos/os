@@ -29,5 +29,10 @@ curl -L 'https://github.com/burmilla/os-initrd-base/releases/download/v2018.02.1
 
 # os-system-docker
 readonly SYSTEM_DOCKER_VERSION="17.06-ros6"
-curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-amd64-${SYSTEM_DOCKER_VERSION}.tgz" -o "_/system-docker-amd64.tgz"
-curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-arm64-${SYSTEM_DOCKER_VERSION}.tgz" -o "_/system-docker-arm64.tgz"
+curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-amd64-${SYSTEM_DOCKER_VERSION}.tgz" -o '_/system-docker-amd64.tgz'
+curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-arm64-${SYSTEM_DOCKER_VERSION}.tgz" -o '_/system-docker-arm64.tgz'
+
+# kexec
+mkdir -p scripts/installer/kexec/_
+curl -L 'https://www.kernel.org/pub/linux/utils/kernel/kexec/kexec-tools-2.0.15.tar.gz' -o '_/kexec-tools-2.0.15.tar.gz'
+cp '_/kexec-tools-2.0.15.tar.gz' 'scripts/installer/kexec/_/.'
