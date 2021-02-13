@@ -553,7 +553,13 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 			Timeout:  0,
 			Fallback: 0, // need to be conditional on there being a 'rollback'?
 			Entries: []install.MenuEntry{
-				install.MenuEntry{"BurmillaOS-current", config.BootDir, VERSION, kernelArgs, kappend},
+				install.MenuEntry{
+					Name:       "BurmillaOS-current",
+					BootDir:    config.BootDir,
+					Version:    VERSION,
+					KernelArgs: kernelArgs,
+					Append:     kappend,
+				},
 			},
 		}
 		install.PvGrubConfig(menu)
