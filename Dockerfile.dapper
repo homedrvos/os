@@ -112,5 +112,8 @@ RUN tar -xvJf ${DOWNLOADS}/os-base.tar.xz -C ${DOWNLOADS}
 # os-initrd-base
 COPY _/os-initrd-base-${ARCH}.tar.gz ${DOWNLOADS}/os-initrd-base.tar.xz
 
+# os-system-docker
+COPY _/system-docker-${ARCH}.tgz ${DOWNLOADS}/system-docker.tgz
+
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]

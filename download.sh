@@ -26,3 +26,8 @@ curl -L 'https://github.com/burmilla/os-base/releases/download/v2018.02.11-1/os-
 # os-initrd-base
 curl -L 'https://github.com/burmilla/os-initrd-base/releases/download/v2018.02.11-1/os-initrd-base-amd64.tar.gz' -o '_/os-initrd-base-amd64.tar.gz'
 curl -L 'https://github.com/burmilla/os-initrd-base/releases/download/v2018.02.11-1/os-initrd-base-arm64.tar.gz' -o '_/os-initrd-base-arm64.tar.gz'
+
+# os-system-docker
+readonly SYSTEM_DOCKER_VERSION="17.06-ros6"
+curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-amd64-${SYSTEM_DOCKER_VERSION}.tgz" -o "_/system-docker-amd64.tgz"
+curl -L "https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-arm64-${SYSTEM_DOCKER_VERSION}.tgz" -o "_/system-docker-arm64.tgz"

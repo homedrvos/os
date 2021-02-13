@@ -29,7 +29,9 @@ ln -s usr/bin/ros              ${INITRD_DIR}/init
 ln -s bin                      ${INITRD_DIR}/usr/sbin
 ln -s usr/sbin                 ${INITRD_DIR}/sbin
 
-curl -SL ${!SYSTEM_DOCKER_URL} | tar --strip-components=1 -xzvf - -C ${INITRD_DIR}/usr/bin/
+
+tar --strip-components=1 -xzvf ${DOWNLOADS}/system-docker.tgz \
+    -C ${INITRD_DIR}/usr/bin/
 # we have disabled the user-proxy so we get rid of system-docker-proxy
 rm -f ${INITRD_DIR}/usr/bin/system-docker-proxy
 
