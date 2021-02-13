@@ -12,6 +12,6 @@ export ARTIFACTS BUILD INITRD_DIR VERSION
 ./scripts/layout-initrd
 ./scripts/layout-kernel
 
-curl -sL ${!OS_INITRD_BASE_URL} | tar xzvf - -C ${INITRD_DIR}
+tar xzvf ${DOWNLOADS}/os-initrd-base.tar.xz  -C ${INITRD_DIR}
 
 ./scripts/hash-initrd

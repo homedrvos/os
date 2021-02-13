@@ -35,12 +35,6 @@ ARG OS_CONSOLE=default
 ARG OS_AUTOFORMAT=false
 ARG OS_FIRMWARE=true
 
-ARG OS_BASE_URL_amd64=https://github.com/burmilla/os-base/releases/download/v2018.02.11-1/os-base_amd64.tar.xz
-ARG OS_BASE_URL_arm64=https://github.com/burmilla/os-base/releases/download/v2018.02.11-1/os-base_arm64.tar.xz
-
-ARG OS_INITRD_BASE_URL_amd64=https://github.com/burmilla/os-initrd-base/releases/download/v2018.02.11-1/os-initrd-base-amd64.tar.gz
-ARG OS_INITRD_BASE_URL_arm64=https://github.com/burmilla/os-initrd-base/releases/download/v2018.02.11-1/os-initrd-base-arm64.tar.gz
-
 ARG SYSTEM_DOCKER_VERSION=17.06-ros6
 ARG SYSTEM_DOCKER_URL_amd64=https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-amd64-${SYSTEM_DOCKER_VERSION}.tgz
 ARG SYSTEM_DOCKER_URL_arm64=https://github.com/burmilla/os-system-docker/releases/download/${SYSTEM_DOCKER_VERSION}/docker-arm64-${SYSTEM_DOCKER_VERSION}.tgz
@@ -66,12 +60,6 @@ ENV DAPPER_HOST_ARCH=${DAPPER_HOST_ARCH} \
     HOSTNAME_DEFAULT=${HOSTNAME_DEFAULT} \
     IMAGE_NAME=${IMAGE_NAME} \
     KERNEL_VERSION=${KERNEL_VERSION} \
-    OS_BASE_URL=OS_BASE_URL_${ARCH} \
-    OS_BASE_URL_amd64=${OS_BASE_URL_amd64} \
-    OS_BASE_URL_arm64=${OS_BASE_URL_arm64} \
-    OS_INITRD_BASE_URL=OS_INITRD_BASE_URL_${ARCH} \
-    OS_INITRD_BASE_URL_amd64=${OS_INITRD_BASE_URL_amd64} \
-    OS_INITRD_BASE_URL_arm64=${OS_INITRD_BASE_URL_arm64} \
     OS_RELEASES_YML=${OS_RELEASES_YML} \
     OS_REPO=${OS_REPO} \
     OS_SERVICES_REPO=${OS_SERVICES_REPO} \
@@ -117,8 +105,12 @@ RUN chmod +x /usr/bin/docker
 # Install dapper
 RUN go get github.com/homedrvos/dapper
 
+# os-base
 COPY _/os-base_${ARCH}.tar.xz ${DOWNLOADS}/os-base.tar.xz
 RUN tar -xvJf ${DOWNLOADS}/os-base.tar.xz -C ${DOWNLOADS}
+
+# os-initrd-base
+COPY _/os-initrd-base-${ARCH}.tar.gz ${DOWNLOADS}/os-initrd-base.tar.xz
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
