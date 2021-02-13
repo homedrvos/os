@@ -21,7 +21,8 @@ done
 for i in ${IMAGES}; do
     echo "tar-image: pull($i)"
     if ! docker inspect $i >/dev/null 2>&1; then
-        docker pull ${i}
+        echo image "${i}" missing
+        exit 1
     fi
 
     if [ "${i%%:*}" != "$INIT_DEP" ] ; then
@@ -35,7 +36,8 @@ done
 
 for i in ${APPEND_USER_IMAGES}; do
     if ! docker inspect $i >/dev/null 2>&1; then
-        docker pull ${i}
+        echo image "${i}" missing
+        exit 1
     fi
     USER_IMAGES="${USER_IMAGES} ${i}"
 done
