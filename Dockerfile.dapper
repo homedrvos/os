@@ -23,11 +23,8 @@ ARG OS_REPO=burmilla
 ARG HOSTNAME_DEFAULT=burmilla
 ARG DISTRIB_ID=BurmillaOS
 
-ARG SELINUX_POLICY_URL=https://github.com/burmilla/refpolicy/releases/download/v0.0.3/policy.29
-
 ARG KERNEL_VERSION=4.14.218-burmilla
-ARG KERNEL_URL_amd64=https://github.com/burmilla/os-kernel/releases/download/v${KERNEL_VERSION}/linux-${KERNEL_VERSION}-x86.tar.gz
-ARG KERNEL_URL_arm64=https://github.com/burmilla/os-kernel/releases/download/v${KERNEL_VERSION}/linux-${KERNEL_VERSION}-arm64.tar.gz
+ARG KERNEL_ARCH=x86
 
 ARG BUILD_DOCKER_URL_amd64=https://get.docker.com/builds/Linux/x86_64/docker-1.10.3
 ARG BUILD_DOCKER_URL_arm64=https://github.com/burmilla/docker/releases/download/v1.10.3-ros1/docker-1.10.3_arm64
@@ -75,9 +72,6 @@ ENV BUILD_DOCKER_URL=BUILD_DOCKER_URL_${ARCH} \
     HOSTNAME_DEFAULT=${HOSTNAME_DEFAULT} \
     IMAGE_NAME=${IMAGE_NAME} \
     KERNEL_VERSION=${KERNEL_VERSION} \
-    KERNEL_URL=KERNEL_URL_${ARCH} \
-    KERNEL_URL_amd64=${KERNEL_URL_amd64} \
-    KERNEL_URL_arm64=${KERNEL_URL_arm64} \
     OS_BASE_URL=OS_BASE_URL_${ARCH} \
     OS_BASE_URL_amd64=${OS_BASE_URL_amd64} \
     OS_BASE_URL_arm64=${OS_BASE_URL_arm64} \
@@ -91,7 +85,6 @@ ENV BUILD_DOCKER_URL=BUILD_DOCKER_URL_${ARCH} \
     OS_AUTOFORMAT=${OS_AUTOFORMAT} \
     OS_FIRMWARE=${OS_FIRMWARE} \
     REPO_VERSION=master \
-    SELINUX_POLICY_URL=${SELINUX_POLICY_URL} \
     SYSTEM_DOCKER_URL=SYSTEM_DOCKER_URL_${ARCH} \
     SYSTEM_DOCKER_URL_amd64=${SYSTEM_DOCKER_URL_amd64} \
     SYSTEM_DOCKER_URL_arm64=${SYSTEM_DOCKER_URL_arm64} \
@@ -103,22 +96,29 @@ ENV PATH=${GOPATH}/bin:/usr/local/go/bin:$PATH
 
 RUN mkdir -p ${DOWNLOADS}
 
-# Download kernel
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-RUN echo "... Downloading  ${!KERNEL_URL}"; \
-    if [ -n "${!KERNEL_URL}" ]; then \
-        curl -fL ${!KERNEL_URL} > ${DOWNLOADS}/kernel.tar.gz \
-    ;fi
 
-# Download SELinux Policy
-COPY _bits/selinux_policy.29 policy.29
+# Kernel
+COPY _/linux-${KERNEL_VERSION}-${KERNEL_ARCH}.tar.gz \
+    ${DOWNLOADS}/kernel.tar.gz
+
+# SELinux Policy
+COPY _/selinux_policy.29 policy.29
 
 # Install Go
-RUN wget -O - https://storage.googleapis.com/golang/go${GO_VERSION}.linux-${GOARCH}.tar.gz | tar -xzf - -C /usr/local && \
-    go get github.com/burmilla/trash
+COPY _/go1.8.5.linux-amd64.tar.gz /usr/local/go.tar.gz
+RUN tar -C /usr/local -xzf /usr/local/go.tar.gz
 
-RUN mkdir -p ${GOPATH}/src/golang.org/x && cd ${GOPATH}/src/golang.org/x/ && git clone https://github.com/golang/tools && \
-    cd tools && git checkout 6adeb8aab2ded9eb693b831d5fd090c10a6ebdfa -b temp && go get golang.org/x/lint/golint
+# Get and compile trash
+RUN go get github.com/homedrvos/trash
+
+# Get and compile golint
+RUN mkdir -p ${GOPATH}/src/golang.org/x && \
+    cd ${GOPATH}/src/golang.org/x/ && \
+    git clone https://github.com/golang/tools && \
+    cd tools && \
+    git checkout 6adeb8aab2ded9eb693b831d5fd090c10a6ebdfa -b temp && \
+    go get golang.org/x/lint/golint
 
 # Install Host Docker
 RUN curl -fL ${!BUILD_DOCKER_URL} > /usr/bin/docker && \
