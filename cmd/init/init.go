@@ -45,7 +45,7 @@ func RunInit() error {
 	initFuncs := config.CfgFuncs{
 		{Name: "set env", Func: env.Init},
 		{Name: "preparefs", Func: prepare.FS},
-		{Name: "save init cmdline", prepare.SaveCmdline},
+		{Name: "save init cmdline", Func: prepare.SaveCmdline},
 		{Name: "mount OEM", Func: fsmount.MountOem},
 		{Name: "debug save cfg", Func: debug.PrintAndLoadConfig},
 		{Name: "load modules", Func: modules.LoadModules},
