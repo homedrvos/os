@@ -1,14 +1,9 @@
-FROM debian:stable-slim
+FROM cr.shanhu.io/bos-debian
 
 COPY build/sshd_config.append.tpl /etc/ssh/
 COPY build/lsb-release /etc/
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends iptables openssh-server rsync locales \
-                           sudo less curl ca-certificates psmisc htop kmod iproute2 \
-                           net-tools bash-completion wget \
-                           nano open-iscsi iputils-ping \
-    && rm -rf /var/lib/apt/lists/* \
+RUN rm -rf /var/lib/apt/lists/* \
     && rm -rf /etc/ssh/*key* \
     && echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen \
     && locale-gen \
