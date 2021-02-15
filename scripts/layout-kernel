@@ -24,7 +24,7 @@ if [ -e ${DOWNLOADS}/kernel.tar.gz ]; then
         fi
     done
 
-    # TODO: move these into a separate tar.gz and add to the syslinux initrd line
+    # TODO: move these into a separate tar.xz and add to the syslinux initrd line
     if [ -d ${BUILD}/kernel/lib ]; then
         rm -rf ${INITRD_DIR}/usr/lib
         cp -rf ${BUILD}/kernel/lib ${INITRD_DIR}/usr/

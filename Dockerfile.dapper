@@ -23,10 +23,10 @@ ARG OS_REPO=burmilla
 ARG HOSTNAME_DEFAULT=burmilla
 ARG DISTRIB_ID=BurmillaOS
 
-ARG KERNEL_VERSION=4.14.218-burmilla
+ARG KERNEL_VERSION=5.10.16-burmilla
 ARG KERNEL_ARCH=x86
 
-ARG OS_RELEASES_YML=https://raw.githubusercontent.com/burmilla/releases/v1.9.x
+ARG OS_RELEASES_YML=https://raw.githubusercontent.com/burmilla/releases/v2.0.x
 
 ARG OS_SERVICES_REPO=https://raw.githubusercontent.com/${OS_REPO}/os-services
 ARG IMAGE_NAME=${OS_REPO}/os
@@ -36,11 +36,15 @@ ARG OS_AUTOFORMAT=false
 ARG OS_FIRMWARE=true
 
 ARG SYSTEM_DOCKER_VERSION=17.06-ros6
-ARG USER_DOCKER_VERSION=19.03.15
+ARG USER_DOCKER_VERSION=20.10.3
 ARG USER_DOCKER_ENGINE_VERSION=docker-${USER_DOCKER_VERSION}
+
+ARG CD_BOOT_IMAGES_VERSION=9
+ARG CD_BOOT_IMAGES_URL=http://archive.ubuntu.com/ubuntu/pool/main/c/cd-boot-images-amd64/cd-boot-images-amd64_${CD_BOOT_IMAGES_VERSION}_all.deb
 
 ARG AZURE_SERVICE=false
 ARG PROXMOXVE_SERVICE=false
+ARG SKIP_BUILD=false
 ######################################################
 
 # Set up environment and export all ARGS as ENV
@@ -66,8 +70,11 @@ ENV DAPPER_HOST_ARCH=${DAPPER_HOST_ARCH} \
     REPO_VERSION=master \
     USER_DOCKER_VERSION=${USER_DOCKER_VERSION} \
     USER_DOCKER_ENGINE_VERSION=${USER_DOCKER_ENGINE_VERSION} \
+    CD_BOOT_IMAGES_VERSION=${CD_BOOT_IMAGES_VERSION} \
+    CD_BOOT_IMAGES_URL=${CD_BOOT_IMAGES_URL} \
     AZURE_SERVICE=${AZURE_SERVICE} \
-    PROXMOXVE_SERVICE=${PROXMOXVE_SERVICE}
+    PROXMOXVE_SERVICE=${PROXMOXVE_SERVICE} \
+    SKIP_BUILD=${SKIP_BUILD}
 ENV PATH=${GOPATH}/bin:/usr/local/go/bin:$PATH
 ENV GO111MODULE=off
 
@@ -81,6 +88,12 @@ COPY _/linux-${KERNEL_VERSION}-${KERNEL_ARCH}.tar.gz \
 
 # SELinux Policy
 COPY _/selinux_policy.29 policy.29
+
+# Download EFI files
+RUN echo "... Downloading  ${CD_BOOT_IMAGES_URL=$}"; \
+    if [ -n "${CD_BOOT_IMAGES_URL}" ]; then \
+        curl -fL ${CD_BOOT_IMAGES_URL} > ${DOWNLOADS}/cd-boot-images.deb \
+    ;fi
 
 # Install Go
 COPY _/go1.15.8.linux-${ARCH}.tar.gz /usr/local/go.tar.gz
