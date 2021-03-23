@@ -60,7 +60,7 @@ ARG DISTRIB_ID=BurmillaOS
 
 ARG SELINUX_POLICY_URL=https://github.com/burmilla/refpolicy/releases/download/v0.0.3/policy.29
 
-ARG KERNEL_VERSION=5.9.6-burmilla
+ARG KERNEL_VERSION=5.10.19-burmilla
 ARG KERNEL_URL_amd64=https://github.com/burmilla/os-kernel/releases/download/v${KERNEL_VERSION}/linux-${KERNEL_VERSION}-x86.tar.gz
 ARG KERNEL_URL_arm64=https://github.com/burmilla/os-kernel/releases/download/v${KERNEL_VERSION}/linux-${KERNEL_VERSION}-arm64.tar.gz
 
@@ -160,7 +160,7 @@ RUN curl -fL ${!BUILD_DOCKER_URL} > /usr/bin/docker && \
     chmod +x /usr/bin/docker
 
 # Install dapper
-RUN curl -sL https://releases.rancher.com/dapper/latest/dapper-`uname -s`-`uname -m | sed 's/arm.*/arm/'` > /usr/bin/dapper && \
+RUN curl -sL https://releases.rancher.com/dapper/v0.5.4/dapper-`uname -s`-`uname -m | sed 's/arm.*/arm/'` > /usr/bin/dapper && \
     chmod +x /usr/bin/dapper
 
 RUN cd ${DOWNLOADS} && \
