@@ -150,7 +150,7 @@ RUN mkdir -p ${DOWNLOADS}
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN echo "... Downloading  ${!KERNEL_URL}"; \
     if [ "${!KERNEL_URL}" != "skip" ]; then \
-        curl -fL ${!KERNEL_URL} > ${DOWNLOADS}/kernel.tar.gz \
+        curl -fL ${!KERNEL_URL} > ${DOWNLOADS}/kernel.tar.xz \
     ;fi
 
 # Download SELinux Policy
