@@ -9,17 +9,7 @@ import (
 	yaml "github.com/cloudfoundry-incubator/candiedyaml"
 )
 
-const Banner = `
-||||||                                              |||||||  |||||
-|     | |    | |||||  |    | | |      |        ||   |     | |     |
-|     | |    | |    | ||  || | |      |       |  |  |     | |
-||||||  |    | |    | | || | | |      |      |    | |     |  |||||
-|     | |    | |||||  |    | | |      |      |||||| |     |       |
-|     | |    | |   |  |    | | |      |      |    | |     | |     |
-||||||   ||||  |    | |    | | |||||| |||||| |    | |||||||  |||||
-
-         BurmillaOS \v \n \l
-         `
+const Banner = `HomeDrive BurmillaOS \v \n \l`
 
 func Merge(bytes []byte) error {
 	data, err := readConfigs(bytes, false, true)
