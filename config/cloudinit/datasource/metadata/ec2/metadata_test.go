@@ -69,14 +69,7 @@ func TestFetchMetadata(t *testing.T) {
 				SSHPublicKeys: map[string]string{"test1": "key"},
 				RootDisk:      "/dev/xvda",
 				NetworkConfig: netconf.NetworkConfig{
-					Interfaces: map[string]netconf.InterfaceConfig{
-					/*			"eth0": netconf.InterfaceConfig{
-									Addresses: []string{
-										"1.2.3.4",
-										"5.6.7.8",
-									},
-								},
-					*/},
+					Interfaces: map[string]netconf.InterfaceConfig{},
 				},
 			},
 		},
@@ -99,14 +92,7 @@ func TestFetchMetadata(t *testing.T) {
 				SSHPublicKeys: map[string]string{"test1": "key"},
 				RootDisk:      "/dev/nvme0n1",
 				NetworkConfig: netconf.NetworkConfig{
-					Interfaces: map[string]netconf.InterfaceConfig{
-					/*						"eth0": netconf.InterfaceConfig{
-												Addresses: []string{
-													"1.2.3.4",
-													"5.6.7.8",
-												},
-											},
-					*/},
+					Interfaces: map[string]netconf.InterfaceConfig{},
 				},
 			},
 		},
