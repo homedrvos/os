@@ -30,26 +30,33 @@ ls -al build/run.img
 
 # partition #1 - Type= c W95 FAT32 (LBA)
 losetup
-PART1_DEVICE=$(losetup -f)
-losetup -d ${PART1_DEVICE} || /bin/true
-losetup --offset $BOOT_PARTITION_OFFSET --sizelimit $BOOT_PARTITION_BYTES ${PART1_DEVICE} build/run.img
-mkfs.vfat -n RancherOS ${PART1_DEVICE}
+PART1_DEVICE="$(losetup -f)"
+losetup -d "${PART1_DEVICE}" || /bin/true
+losetup --offset "${BOOT_PARTITION_OFFSET}" \
+	--sizelimit "${BOOT_PARTITION_BYTES}" \
+	"${PART1_DEVICE}" build/run.img
+mkfs.vfat -n RancherOS "${PART1_DEVICE}"
+losetup -d "${PART1_DEVICE}"
 
 # partition #2 - Type=83 Linux
-PART2_DEVICE=$(losetup -f)
-losetup -d ${PART2_DEVICE} || /bin/true
-losetup --offset $ROOT_PARTITION_OFFSET ${PART2_DEVICE} build/run.img
-mkfs.ext4 -O ^has_journal -b 4096 -L rootfs ${PART2_DEVICE}
+PART2_DEVICE="$(losetup -f)"
+losetup -d "${PART2_DEVICE}" || /bin/true
+losetup --offset "${ROOT_PARTITION_OFFSET}" "${PART2_DEVICE}" build/run.img
+mkfs.ext4 -O ^has_journal -b 4096 -L rootfs "${PART2_DEVICE}"
+losetup -d "${PART2_DEVICE}"
 
-# detach loop devices
-losetup -d ${PART1_DEVICE}
-losetup -d ${PART2_DEVICE}
-
+PART2_DEVICE="$(losetup -f)"
 # mount partitions as loopback devices
-mount -t ext4 -o loop=${PART2_DEVICE},offset=$ROOT_PARTITION_OFFSET build/run.img build/root
+mount -t ext4 \
+	-o "loop=${PART2_DEVICE},offset=${ROOT_PARTITION_OFFSET}" \
+	build/run.img build/root
 rm -rf build/root/lost+found
+
 mkdir -p build/root/boot
-mount -t vfat -o loop=${PART1_DEVICE},offset=$BOOT_PARTITION_OFFSET build/run.img build/root/boot
+PART1_DEVICE="$(losetup -f)"
+mount -t vfat \
+	-o "loop=${PART1_DEVICE},offset=${BOOT_PARTITION_OFFSET}" \
+       build/run.img build/root/boot
 rm -rf build/root/boot/lost+found
 echo "RancherOS: boot partition" > build/root/boot/boot.txt
 echo "RancherOS: root partition" > build/root/root.txt
