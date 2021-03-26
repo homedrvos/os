@@ -15,17 +15,17 @@ for i in $BASE/[0-9]*; do
     name="os-$(echo ${i} | cut -f2 -d-)"
     tag="${OS_REPO}/${name}:${VERSION}${SUFFIX}"
     echo "build-image: Building ${tag}"
-    if [ -x ${i}/prebuild.sh ]; then
-        ${i}/prebuild.sh
+    if [[ -x "${i}/prebuild.sh" ]]; then
+        "${i}/prebuild.sh"
     fi
 
-    if dapper -d --build -f ${i}/Dockerfile -- -t burmilla/${name} ${i}; then
-        docker tag burmilla/${name} ${tag}
+    if dapper -d --build -f "${i}/Dockerfile" -- -t "burmilla/${name}" "${i}"; then
+        docker tag "burmilla/${name}" "${tag}"
         echo "${tag}" >> dist/images
-    elif [ "$?" != "42" ]; then
-        exit 1
-    else
+    elif [[ "$?" == "42" ]]; then
         echo "WARN: Skipping ${tag}"
+    else
+        exit 1
     fi
 done
 
