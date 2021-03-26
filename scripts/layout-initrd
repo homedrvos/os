@@ -15,7 +15,7 @@ function cache_services() {
     wget -O ${INITRD_DIR}/usr/share/ros/services-cache/${SERVICE_YMLFILE_URL_MD5} ${SERVICE_YMLFILE_URL}
 }
 
-echo Create initrd layout in $INITRD_DIR
+echo "Create initrd layout in ${INITRD_DIR}"
 
 rm -rf ${INITRD_DIR}
 mkdir -p ${INITRD_DIR}/usr/{etc,lib,bin,share/ros}
@@ -86,22 +86,22 @@ case ${OS_CONSOLE} in
         ;;
 esac
 
-pushd ${INITRD_DIR}/usr/etc
+pushd "${INITRD_DIR}/usr/etc"
 ln -s ../share/ros/os-release .
 popd
 
 # Support upgrades from old persistent consoles that bind mount these
-touch ${INITRD_DIR}/usr/bin/docker-containerd
-touch ${INITRD_DIR}/usr/bin/docker-containerd-shim
-touch ${INITRD_DIR}/usr/bin/docker
+touch "${INITRD_DIR}/usr/bin/docker-containerd"
+touch "${INITRD_DIR}/usr/bin/docker-containerd-shim"
+touch "${INITRD_DIR}/usr/bin/docker"
 
 if [ -e ${DOWNLOADS}/policy.29 ]; then
-    mkdir -p ${INITRD_DIR}/usr/etc/selinux/ros/policy/
-    cp ${DOWNLOADS}/policy.29 ${INITRD_DIR}/usr/etc/selinux/ros/policy/
+    mkdir -p "${INITRD_DIR}/usr/etc/selinux/ros/policy/"
+    cp "${DOWNLOADS}/policy.29 ${INITRD_DIR}/usr/etc/selinux/ros/policy/"
 fi
 
 # make burmilla/os-initrd image
-cat <<HERE > ${INITRD_DIR}/../Dockerfile.initrd
+cat <<HERE > "${INITRD_DIR}/../Dockerfile.initrd"
 FROM scratch
 COPY initrd/* /
 HERE
@@ -109,7 +109,7 @@ HERE
 name="os-initrd"
 tag="${OS_REPO}/${name}:${VERSION}${SUFFIX}"
 pushd .
-cd ${INITRD_DIR}/..
-docker build -t ${OS_REPO}/${name} -f Dockerfile.initrd .
-docker tag burmilla/${name} ${tag}
+cd "${INITRD_DIR}/.."
+docker build -t "${OS_REPO}/${name}" -f Dockerfile.initrd .
+docker tag "burmilla/${name}" "${tag}"
 popd
