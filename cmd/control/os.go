@@ -197,21 +197,20 @@ func osUpgrade(c *cli.Context) error {
 		log.Fatalf("ros install / upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
 
-	if isExist := checkGlobalCfg(); !isExist {
+	if found := checkGlobalCfg(); !found {
 		log.Fatalf("ros upgrade cannot be supported")
 	}
 
 	image := c.String("image")
-
 	if image == "" {
-		var err error
-		image, err = getLatestImage()
+		img, err := getLatestImage()
 		if err != nil {
 			log.Fatal(err)
 		}
-		if image == "" {
+		if img == "" {
 			log.Fatal("Failed to find latest image")
 		}
+		image = img
 	}
 	if c.Args().Present() {
 		log.Fatalf("invalid arguments %v", c.Args())

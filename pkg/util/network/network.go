@@ -174,7 +174,10 @@ func LoadMultiEngineResource(name string) ([]byte, error) {
 	}
 
 	if _, ok := composeConfigs[name]; !ok {
-		return nil, errors.New("Failed to found " + name + " from " + config.MultiDockerConfFile + " will load from network")
+		return nil, fmt.Errorf(
+			"Cannot find %q from %q, will load from network",
+			name, config.MultiDockerConfFile,
+		)
 	}
 
 	foundServiceConfig := map[string]composeConfig.ServiceConfigV1{}
