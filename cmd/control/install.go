@@ -135,8 +135,7 @@ func installAction(c *cli.Context) error {
 		log.Info("No install type specified...defaulting to generic")
 		installType = "generic"
 	}
-	if installType == "rancher-upgrade" ||
-		installType == "upgrade" {
+	if installType == "rancher-upgrade" || installType == "upgrade" {
 		installType = "upgrade" // rancher-upgrade is redundant!
 		force = true            // the os.go upgrade code already asks
 		reboot = false

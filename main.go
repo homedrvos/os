@@ -18,6 +18,7 @@ import (
 	"github.com/docker/docker/pkg/reexec"
 )
 
+// Different flavors of the binary that depends on the value of os.Args[0].
 var entrypoints = map[string]func(){
 	"autologin":          control.AutologinMain,
 	"cloud-init-execute": cloudinitexecute.Main,
@@ -51,6 +52,11 @@ func main() {
 		f.Close()
 	}
 
+	// NOTE(h8liu): Pacakge reexec is supposed to be used for initialization
+	// rather than execution. This registration of entry points essentially
+	// duplicates the map. The only side effect is that there might be other
+	// entrypoints registered in init() of dependencies, but serching the
+	// code, it does not seem so.
 	for name, f := range entrypoints {
 		reexec.Register(name, f)
 	}
