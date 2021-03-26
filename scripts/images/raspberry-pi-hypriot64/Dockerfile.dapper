@@ -10,11 +10,11 @@ RUN mkdir -p /source/assets
 
 COPY rootfs_arm64.tar.gz /source/assets/rootfs_arm64.tar.gz
 
-ENV KERNEL_URL=https://github.com/burmilla/os-rpi-kernel/releases/download/v5.9.6-burmilla/5.9.6-burmilla-v8.tar.gz
-ENV BOOTLOADER_URL=https://github.com/burmilla/os-rpi-kernel/releases/download/v5.9.6-burmilla/rpi-bootloader.tar.gz
+ENV KERNEL_URL=https://github.com/burmilla/os-rpi-kernel/releases/download/v5.10.16-burmilla/5.10.16-burmilla-v8.tar.gz
+ENV BOOTLOADER_URL=https://github.com/burmilla/os-rpi-kernel/releases/download/v5.10.16-burmilla/rpi-bootloader.tar.gz
 
 RUN curl -fL ${KERNEL_URL} > /source/assets/kernel.tar.gz
-RUN curl -fL ${BOOTLOADER_URL} > /source/assets/rpi-bootfiles.tar.gz
+RUN curl -fL ${BOOTLOADER_URL} > /source/assets/rpi-bootloader.tar.gz
 
 WORKDIR /source
 CMD ["./scripts/build.sh"]

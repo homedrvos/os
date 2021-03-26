@@ -1,13 +1,8 @@
 FROM ubuntu:bionic
 # FROM arm64=arm64v8/ubuntu:bionic
 
-# get the apt-cacher proxy set
-ARG APTPROXY=
-
-RUN echo "Acquire::http { Proxy \"$APTPROXY\"; };" >> /etc/apt/apt.conf.d/01proxy \
-    && cat /etc/apt/apt.conf.d/01proxy \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         build-essential \
         ca-certificates \
         cpio \
@@ -40,7 +35,7 @@ RUN echo "Acquire::http { Proxy \"$APTPROXY\"; };" >> /etc/apt/apt.conf.d/01prox
 
 ########## Dapper Configuration #####################
 
-ENV DAPPER_ENV VERSION DEV_BUILD RUNTEST DEBUG APTPROXY ENGINE_REGISTRY_MIRROR KERNEL_CHECK APPEND_SYSTEM_IMAGES APPEND_USER_IMAGES
+ENV DAPPER_ENV VERSION DEV_BUILD RUNTEST DEBUG ENGINE_REGISTRY_MIRROR KERNEL_CHECK APPEND_SYSTEM_IMAGES APPEND_USER_IMAGES
 ENV DAPPER_DOCKER_SOCKET true
 ENV DAPPER_SOURCE /go/src/github.com/burmilla/os
 ENV DAPPER_OUTPUT ./bin ./dist ./build/initrd
