@@ -290,9 +290,11 @@ func startUpgradeContainer(image string, stage, force, reboot, kexec, upgradeCon
 		return err
 	}
 
+	ctx := context.Background()
+
 	// Only pull image if not found locally
-	if _, _, err := client.ImageInspectWithRaw(context.Background(), image, false); err != nil {
-		if err := container.Pull(context.Background()); err != nil {
+	if _, _, err := client.ImageInspectWithRaw(ctx, image, false); err != nil {
+		if err := container.Pull(ctx); err != nil {
 			return err
 		}
 	}
@@ -300,19 +302,16 @@ func startUpgradeContainer(image string, stage, force, reboot, kexec, upgradeCon
 	if !stage {
 		// If there is already an upgrade container, delete it
 		// Up() should to this, but currently does not due to a bug
-		if err := container.Delete(context.Background(), options.Delete{}); err != nil {
+		if err := container.Delete(ctx, options.Delete{}); err != nil {
 			return err
 		}
-
-		if err := container.Up(context.Background(), options.Up{}); err != nil {
+		if err := container.Up(ctx, options.Up{}); err != nil {
 			return err
 		}
-
-		if err := container.Log(context.Background(), true); err != nil {
+		if err := container.Log(ctx, true); err != nil {
 			return err
 		}
-
-		if err := container.Delete(context.Background(), options.Delete{}); err != nil {
+		if err := container.Delete(ctx, options.Delete{}); err != nil {
 			return err
 		}
 
@@ -327,11 +326,9 @@ func startUpgradeContainer(image string, stage, force, reboot, kexec, upgradeCon
 
 func parseBody(body []byte) (*Images, error) {
 	update := &Images{}
-	err := yaml.Unmarshal(body, update)
-	if err != nil {
+	if err := yaml.Unmarshal(body, update); err != nil {
 		return nil, err
 	}
-
 	return update, nil
 }
 
