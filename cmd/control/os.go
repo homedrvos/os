@@ -117,8 +117,7 @@ func getImages(update bool) (*Images, error) {
 		upgradeURL = u.String()
 
 		if update {
-			_, err := network.UpdateCache(upgradeURL)
-			if err != nil {
+			if _, err := network.UpdateCache(upgradeURL); err != nil {
 				log.Errorf("Failed to update os caches: %v", err)
 			}
 		}

@@ -62,20 +62,17 @@ func getServices(urls []string, key string) ([]string, error) {
 func SetProxyEnvironmentVariables() {
 	cfg := config.LoadConfig()
 	if cfg.Rancher.Network.HTTPProxy != "" {
-		err := os.Setenv("HTTP_PROXY", cfg.Rancher.Network.HTTPProxy)
-		if err != nil {
+		if err := os.Setenv("HTTP_PROXY", cfg.Rancher.Network.HTTPProxy); err != nil {
 			log.Errorf("Unable to set HTTP_PROXY: %s", err)
 		}
 	}
 	if cfg.Rancher.Network.HTTPSProxy != "" {
-		err := os.Setenv("HTTPS_PROXY", cfg.Rancher.Network.HTTPSProxy)
-		if err != nil {
+		if err := os.Setenv("HTTPS_PROXY", cfg.Rancher.Network.HTTPSProxy); err != nil {
 			log.Errorf("Unable to set HTTPS_PROXY: %s", err)
 		}
 	}
 	if cfg.Rancher.Network.NoProxy != "" {
-		err := os.Setenv("NO_PROXY", cfg.Rancher.Network.NoProxy)
-		if err != nil {
+		if err := os.Setenv("NO_PROXY", cfg.Rancher.Network.NoProxy); err != nil {
 			log.Errorf("Unable to set NO_PROXY: %s", err)
 		}
 	}
@@ -102,9 +99,7 @@ func LoadFromNetworkWithCache(location string) ([]byte, error) {
 }
 
 func LoadFromNetwork(location string) ([]byte, error) {
-	var err error
-
-	if err = AllDefaultGWOK(DefaultRoutesCheckTimeout); err != nil {
+	if err := AllDefaultGWOK(DefaultRoutesCheckTimeout); err != nil {
 		return nil, err
 	}
 	SetProxyEnvironmentVariables()
@@ -131,10 +126,10 @@ func LoadResource(location string, network bool) ([]byte, error) {
 			return nil, ErrNoNetwork
 		}
 		return LoadFromNetworkWithCache(location)
-	} else if strings.HasPrefix(location, "/") {
+	}
+	if strings.HasPrefix(location, "/") {
 		return ioutil.ReadFile(location)
 	}
-
 	return nil, ErrNotFound
 }
 
