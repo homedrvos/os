@@ -1016,7 +1016,7 @@ func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
 			continue
 		}
 		// TODO: should overwrite anything other than the global.cfg
-        name := file.Name()
+		name := file.Name()
 		overwrite := name != "global.cfg"
 		if err := dfs.CopyFileOverwrite(filepath.Join(DIST, name), filepath.Join(baseName, config.BootDir), name, overwrite); err != nil {
 			log.Errorf("copy %s: %s", name, err)
