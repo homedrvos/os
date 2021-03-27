@@ -1,6 +1,7 @@
 package install
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -65,13 +66,13 @@ func MountDevice(baseName, device, partition string, raw bool) (string, string, 
 			device = "/dev/" + strings.TrimSpace(string(out))
 		}
 	}
-	if _, err := os.MkdirAll(baseName, 0755); err != nil {
+	if err := os.MkdirAll(baseName, 0755); err != nil {
 		return "", "", fmt.Errorf("make base directory: %s", err)
 	}
 
 	cmd := exec.Command("mount", partition, baseName)
 	log.Debugf("mountdevice return2 -> d: %s, p: %s", device, partition)
-	if err := cmd.Run() err != nil {
+	if err := cmd.Run(); err != nil {
 		return "", "", err
 	}
 	return device, partition, nil

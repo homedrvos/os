@@ -555,8 +555,9 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 		}
 		install.PvGrubConfig(menu)
 	}
+
 	log.Debugf("installRancher")
-	if _, err := installRancher(baseName, VERSION, DIST, kernelArgs+" "+kappend); err != nil {
+	if _, err := installRancher(baseName, DIST, kernelArgs+" "+kappend); err != nil {
 		log.Errorf("%s", err)
 		return err
 	}
@@ -985,9 +986,7 @@ func different(existing, new string) (bool, error) {
 	return !bytes.Equal(data, newData), nil
 }
 
-func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
-	log.Debugf("installRancher")
-
+func installRancher(baseName, DIST, kappend string) (string, error) {
 	// detect if there already is a linux-current.cfg, if so, move it to linux-previous.cfg,
 	currentCfg := filepath.Join(baseName, config.BootDir, "linux-current.cfg")
 	if _, err := os.Stat(currentCfg); !os.IsNotExist(err) {
@@ -1016,13 +1015,11 @@ func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
 			continue
 		}
 		// TODO: should overwrite anything other than the global.cfg
-		overwrite := true
-		if file.Name() == "global.cfg" {
-			overwrite = false
-		}
-		if err := dfs.CopyFileOverwrite(filepath.Join(DIST, file.Name()), filepath.Join(baseName, config.BootDir), file.Name(), overwrite); err != nil {
-			log.Errorf("copy %s: %s", file.Name(), err)
-			//return err
+		name := file.Name()
+		overwrite := name != "global.cfg"
+		if err := dfs.CopyFileOverwrite(filepath.Join(DIST, name), filepath.Join(baseName, config.BootDir), name, overwrite); err != nil {
+			log.Errorf("copy %s: %s", name, err)
+			// TODO(h8liu): handle error?
 		}
 	}
 
@@ -1030,11 +1027,10 @@ func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
 	isolinuxFile := filepath.Join(DIST, "isolinux", "isolinux.cfg")
 	syslinuxDir := filepath.Join(baseName, config.BootDir, "syslinux")
 	if err := dfs.CopyFileOverwrite(isolinuxFile, syslinuxDir, "syslinux.cfg", true); err != nil {
-		log.Errorf("copy global syslinux.cfgS%s: %s", "syslinux.cfg", err)
-		//return err
+		log.Errorf("copy global syslinux.cfg: %s", err)
+		// TODO(h8liu): handle error?
 	} else {
 		log.Debugf("installRancher copy global syslinux.cfgS OK")
-
 	}
 
 	// The global.cfg INCLUDE - useful for over-riding the APPEND line
