@@ -9,7 +9,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/docker/libcompose/project/options"
-    "golang.org/x/net/context"
+	"golang.org/x/net/context"
 )
 
 func switchConsoleAction(c *cli.Context) error {
