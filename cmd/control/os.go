@@ -1,6 +1,7 @@
 package control
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/url"
@@ -21,7 +22,6 @@ import (
 	dockerClient "github.com/docker/engine-api/client"
 	composeConfig "github.com/docker/libcompose/config"
 	"github.com/docker/libcompose/project/options"
-	"golang.org/x/net/context"
 )
 
 type Images struct {

@@ -1,6 +1,7 @@
 package control
 
 import (
+	"context"
 	"errors"
 
 	"github.com/burmilla/os/config"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/docker/libcompose/project/options"
-	"golang.org/x/net/context"
 )
 
 func switchConsoleAction(c *cli.Context) error {
@@ -25,11 +25,13 @@ func switchConsoleAction(c *cli.Context) error {
 		return err
 	}
 
+	ctx := context.TODO()
+
 	// stop docker and console to avoid zombie process
-	if err = project.Stop(context.Background(), 10, "docker"); err != nil {
+	if err = project.Stop(ctx, 10, "docker"); err != nil {
 		log.Errorf("Failed to stop Docker: %v", err)
 	}
-	if err = project.Stop(context.Background(), 10, "console"); err != nil {
+	if err = project.Stop(ctx, 10, "console"); err != nil {
 		log.Errorf("Failed to stop console: %v", err)
 	}
 
@@ -43,13 +45,13 @@ func switchConsoleAction(c *cli.Context) error {
 		log.Errorf("Failed to update 'rancher.console': %v", err)
 	}
 
-	if err = project.Up(context.Background(), options.Up{
+	if err = project.Up(ctx, options.Up{
 		Log: true,
 	}, "console"); err != nil {
 		return err
 	}
 
-	if err = project.Start(context.Background(), "docker"); err != nil {
+	if err = project.Start(ctx, "docker"); err != nil {
 		log.Errorf("Failed to start Docker: %v", err)
 	}
 

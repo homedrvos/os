@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"fmt"
 	"sync"
 
@@ -11,7 +12,6 @@ import (
 	dockerclient "github.com/docker/engine-api/client"
 	composeClient "github.com/docker/libcompose/docker/client"
 	"github.com/docker/libcompose/project"
-	"golang.org/x/net/context"
 )
 
 type ClientFactory struct {

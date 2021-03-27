@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -15,7 +16,6 @@ import (
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
 	"github.com/docker/libcompose/project/options"
-	"golang.org/x/net/context"
 )
 
 type Service struct {

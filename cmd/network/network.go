@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -17,7 +18,6 @@ import (
 	"github.com/burmilla/os/pkg/netconf"
 
 	"github.com/docker/libnetwork/resolvconf"
-	"golang.org/x/net/context"
 )
 
 var funcMap = template.FuncMap{

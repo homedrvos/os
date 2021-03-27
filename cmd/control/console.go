@@ -1,6 +1,7 @@
 package control
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -17,7 +18,6 @@ import (
 	"github.com/docker/docker/reference"
 	composeConfig "github.com/docker/libcompose/config"
 	"github.com/docker/libcompose/project/options"
-	"golang.org/x/net/context"
 )
 
 func consoleSubcommands() []cli.Command {
