@@ -39,19 +39,19 @@ var entrypoints = map[string]func(){
 	"shutdown": power.Shutdown,
 }
 
-func main() {
-	if 0 == 1 {
-		// TODO: move this into a "dev/debug +build"
-		fmt.Fprintf(os.Stderr, "ros main(%s) ppid:%d - print to stdio\n", os.Args[0], os.Getppid())
+func logPPID() {
+	// TODO: run this into "dev/debug +build"
+	fmt.Fprintf(os.Stderr, "ros main(%s) ppid:%d - print to stdio\n", os.Args[0], os.Getppid())
 
-		filename := "/dev/kmsg"
-		f, err := os.OpenFile(filename, os.O_WRONLY, 0644)
-		if err == nil {
-			fmt.Fprintf(f, "ros main(%s) ppid:%d - print to %s\n", os.Args[0], os.Getppid(), filename)
-		}
-		f.Close()
+	filename := "/dev/kmsg"
+	f, err := os.OpenFile(filename, os.O_WRONLY, 0644)
+	if err == nil {
+		fmt.Fprintf(f, "ros main(%s) ppid:%d - print to %s\n", os.Args[0], os.Getppid(), filename)
 	}
+	f.Close()
+}
 
+func main() {
 	// NOTE(h8liu): Pacakge reexec is supposed to be used for initialization
 	// rather than execution. This registration of entry points essentially
 	// duplicates the map. The only side effect is that there might be other
