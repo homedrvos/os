@@ -174,31 +174,29 @@ func availableConsoles(cfg *config.CloudConfig, update bool) []string {
 }
 
 // CurrentConsole gets the name of the console that's running
-func CurrentConsole() (console string) {
+func CurrentConsole() string {
 	// TODO: replace this docker container look up with a libcompose service lookup?
 
 	// sudo system-docker inspect --format "{{.Config.Image}}" console
 	client, err := docker.NewSystemClient()
 	if err != nil {
 		log.Warnf("Failed to detect current console: %v", err)
-		return
+		return ""
 	}
 	info, err := client.ContainerInspect(context.Background(), "console")
 	if err != nil {
 		log.Warnf("Failed to detect current console: %v", err)
-		return
+		return ""
 	}
 	// parse image name, then remove os- prefix and the console suffix
 	image, err := reference.ParseNamed(info.Config.Image)
 	if err != nil {
 		log.Warnf("Failed to detect current console(%s): %v", info.Config.Image, err)
-		return
+		return ""
 	}
 
 	if strings.Contains(image.Name(), "os-console") {
-		console = "default"
-		return
+		return "default"
 	}
-	console = strings.TrimPrefix(strings.TrimSuffix(image.Name(), "console"), "rancher/os-")
-	return
+	return strings.TrimPrefix(strings.TrimSuffix(image.Name(), "console"), "rancher/os-")
 }
