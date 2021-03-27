@@ -139,7 +139,7 @@ func installAction(c *cli.Context) error {
 		installType = "upgrade"
 	}
 	if installType == "upgrade" {
-		force = true            // the os.go upgrade code already asks
+		force = true // the os.go upgrade code already asks
 		reboot = false
 		isoinstallerloaded = true // OMG this flag is aweful - kill it with fire
 	}
