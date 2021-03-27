@@ -3,7 +3,6 @@ package control
 import (
 	"bufio"
 	"bytes"
-	"crypto/md5"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -973,25 +972,22 @@ func installSyslinux(device, baseName, diskType string) error {
 	return nil
 }
 
-func different(existing, new string) bool {
-	// assume existing file exists
-	if _, err := os.Stat(new); os.IsNotExist(err) {
-		return true
-	}
+func different(existing, new string) (bool, error) {
 	data, err := ioutil.ReadFile(existing)
 	if err != nil {
-		return true
+		if os.IsNotExist(err) {
+			return true, nil
+		}
+		return false, err
 	}
 	newData, err := ioutil.ReadFile(new)
 	if err != nil {
-		return true
+		if os.IsNotExist(err) {
+			return true, nil
+		}
+		return false, err
 	}
-	md5sum := md5.Sum(data)
-	newmd5sum := md5.Sum(newData)
-	if md5sum != newmd5sum {
-		return true
-	}
-	return false
+	return !bytes.Equal(data, newData), nil
 }
 
 func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
@@ -1002,7 +998,11 @@ func installRancher(baseName, VERSION, DIST, kappend string) (string, error) {
 	if _, err := os.Stat(currentCfg); !os.IsNotExist(err) {
 		existingCfg := filepath.Join(DIST, "linux-current.cfg")
 		// only remove previous if there is a change to the current
-		if different(currentCfg, existingCfg) {
+		diff, err := different(currentCfg, existingCfg)
+		if err != nil {
+			return "", fmt.Errorf("compare new and old linux-current.cfg: %s", err)
+		}
+		if diff {
 			previousCfg := filepath.Join(baseName, config.BootDir, "linux-previous.cfg")
 			if _, err := os.Stat(previousCfg); !os.IsNotExist(err) {
 				if err := os.Remove(previousCfg); err != nil {
