@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"log"
 	"os"
 	"text/template"
 )
@@ -9,24 +10,22 @@ import (
 func main() {
 	t, err := template.New("schema_template").ParseFiles("./scripts/schema_template")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	schema, err := ioutil.ReadFile("./scripts/schema.json")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	inlinedFile, err := os.Create("config/schema.go")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	err = t.Execute(inlinedFile, map[string]string{
+	if err := t.Execute(inlinedFile, map[string]string{
 		"schema": string(schema),
-	})
-
-	if err != nil {
-		panic(err)
+	}); err != nil {
+		log.Fatal(err)
 	}
 }
