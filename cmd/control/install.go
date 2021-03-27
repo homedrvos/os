@@ -135,8 +135,10 @@ func installAction(c *cli.Context) error {
 		log.Info("No install type specified...defaulting to generic")
 		installType = "generic"
 	}
-	if installType == "rancher-upgrade" || installType == "upgrade" {
-		installType = "upgrade" // rancher-upgrade is redundant!
+	if installType == "rancher-upgrade" { // used in old upgrade triggers.
+		installType = "upgrade"
+	}
+	if installType == "upgrade" {
 		force = true            // the os.go upgrade code already asks
 		reboot = false
 		isoinstallerloaded = true // OMG this flag is aweful - kill it with fire
@@ -341,8 +343,7 @@ func runInstall(image, installType, cloudConfig, device, partition, statedir, ka
 		}
 	}
 
-	err := layDownOS(image, installType, cloudConfig, device, partition, statedir, kappend, kexec)
-	if err != nil {
+	if err := layDownOS(image, installType, cloudConfig, device, partition, statedir, kappend, kexec); err != nil {
 		log.Errorf("error layDownOS %s", err)
 		return err
 	}
@@ -521,9 +522,6 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 			return err
 		}
 		kernelArgs = kernelArgs + " rancher.cloud_init.datasources=[ec2,gce]"
-	case "rancher-upgrade":
-		installType = "upgrade" // rancher-upgrade is redundant
-		fallthrough
 	case "upgrade":
 		var err error
 		device, _, err = install.MountDevice(baseName, device, partition, false)
