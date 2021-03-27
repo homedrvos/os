@@ -1,7 +1,6 @@
 package control
 
 import (
-	"context"
 	"io"
 	"io/ioutil"
 	"os"
@@ -19,6 +18,7 @@ import (
 	"github.com/codegangsta/cli"
 	composeClient "github.com/docker/libcompose/docker/client"
 	"github.com/docker/libcompose/project"
+	"golang.org/x/net/context"
 )
 
 const (

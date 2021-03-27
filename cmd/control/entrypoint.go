@@ -1,7 +1,6 @@
 package control
 
 import (
-	"context"
 	"os"
 	"os/exec"
 	"syscall"
@@ -13,6 +12,7 @@ import (
 	"github.com/burmilla/os/pkg/util"
 
 	"github.com/codegangsta/cli"
+	"golang.org/x/net/context"
 )
 
 const (

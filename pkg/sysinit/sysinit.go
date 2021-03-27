@@ -1,7 +1,6 @@
 package sysinit
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -19,6 +18,7 @@ import (
 
 	"github.com/docker/engine-api/types"
 	"github.com/docker/libcompose/project/options"
+	"golang.org/x/net/context"
 )
 
 const (

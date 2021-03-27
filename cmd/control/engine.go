@@ -1,7 +1,6 @@
 package control
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -30,6 +29,7 @@ import (
 	"github.com/docker/libcompose/project/options"
 	composeYaml "github.com/docker/libcompose/yaml"
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 )
 
 func engineSubcommands() []cli.Command {

@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -13,6 +12,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/docker/libcompose/project"
 	"github.com/docker/libcompose/project/options"
+	"golang.org/x/net/context"
 )
 
 func ProjectPs(p project.APIProject, c *cli.Context) error {

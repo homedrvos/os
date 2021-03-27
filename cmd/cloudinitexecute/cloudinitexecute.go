@@ -1,7 +1,6 @@
 package cloudinitexecute
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -16,6 +15,8 @@ import (
 	"github.com/burmilla/os/pkg/docker"
 	"github.com/burmilla/os/pkg/log"
 	"github.com/burmilla/os/pkg/util"
+
+	"golang.org/x/net/context"
 )
 
 const (
