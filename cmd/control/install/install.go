@@ -38,11 +38,13 @@ func MountDevice(baseName, device, partition string, raw bool) (string, string, 
 			}
 
 			log.Debugf("mountdevice return -> d: %s, p: %s", device, partition)
-			return device, partition, util.Mount(partition, baseName, "", "")
+			if err := util.Mount(partition, baseName, "", ""); err != nil {
+				return "", "", err
+			}
+			return device, partition, nil
 		}
 
-		//rootfs := partition
-		// Don't use ResolveDevice - it can fail, whereas `blkid -L LABEL` works more often
+		// Don't use ResolveDevice; it can fail, whereas `blkid -L LABEL` works more often
 
 		d, _, err := util.Blkid("RANCHER_BOOT")
 		if err != nil {
@@ -62,11 +64,16 @@ func MountDevice(baseName, device, partition string, raw bool) (string, string, 
 			device = "/dev/" + strings.TrimSpace(string(out))
 		}
 	}
-	os.MkdirAll(baseName, 0755)
+	if _, err := os.MkdirAll(baseName, 0755); err != nil {
+		return "", "", fmt.Errorf("make base directory: %s", err)
+	}
+
 	cmd := exec.Command("mount", partition, baseName)
-	//cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
 	log.Debugf("mountdevice return2 -> d: %s, p: %s", device, partition)
-	return device, partition, cmd.Run()
+	if err := cmd.Run() err != nil {
+		return "", "", err
+	}
+	return device, partition, nil
 }
 
 func GetStatePartition() string {

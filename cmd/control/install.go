@@ -462,9 +462,7 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 			return err
 		}
 	case "arm":
-		var err error
-		_, _, err = formatAndMount(baseName, device, partition)
-		if err != nil {
+		if _, _, err := formatAndMount(baseName, device, partition); err != nil {
 			return err
 		}
 		seedData(baseName, cloudConfig, FILES)
@@ -501,8 +499,7 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 		if err := os.MkdirAll(filepath.Join(baseName, statedir), 0755); err != nil {
 			return err
 		}
-		err = seedData(baseName, cloudConfig, FILES)
-		if err != nil {
+		if err := seedData(baseName, cloudConfig, FILES); err != nil {
 			log.Errorf("seedData %s", err)
 			return err
 		}
@@ -515,9 +512,7 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 		installSyslinux(device, baseName, diskType)
 	case "bootstrap":
 		CONSOLE = "ttyS0"
-		var err error
-		_, _, err = install.MountDevice(baseName, device, partition, true)
-		if err != nil {
+		if _, _, err := install.MountDevice(baseName, device, partition, true); err != nil {
 			return err
 		}
 		kernelArgs = kernelArgs + " rancher.cloud_init.datasources=[ec2,gce]"
@@ -561,8 +556,7 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 		install.PvGrubConfig(menu)
 	}
 	log.Debugf("installRancher")
-	_, err := installRancher(baseName, VERSION, DIST, kernelArgs+" "+kappend)
-	if err != nil {
+	if _, err := installRancher(baseName, VERSION, DIST, kernelArgs+" "+kappend); err != nil {
 		log.Errorf("%s", err)
 		return err
 	}
@@ -942,10 +936,11 @@ func installSyslinux(device, baseName, diskType string) error {
 	sysLinuxDir := filepath.Join(baseName, config.BootDir, "syslinux")
 	if err := os.MkdirAll(sysLinuxDir, 0755); err != nil {
 		log.Errorf("MkdirAll(%s)): %s", sysLinuxDir, err)
-		//return err
+		// NOTE(h8liu): why is this "return err" commented out?
+		// return err
 	}
 
-	//cp /usr/lib/syslinux/modules/bios/* ${baseName}/${bootDir}syslinux
+	// cp /usr/lib/syslinux/modules/bios/* ${baseName}/${bootDir}syslinux
 	files, _ := ioutil.ReadDir("/usr/share/syslinux/")
 	for _, file := range files {
 		if file.IsDir() {
