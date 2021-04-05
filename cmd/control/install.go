@@ -105,7 +105,9 @@ func installAction(c *cli.Context) error {
 		log.SetLevel(log.DebugLevel)
 	}
 
-	if runtime.GOARCH != "amd64" {
+	switch runtime.GOARCH {
+	case "amd64", "arm64":
+	default:
 		log.Fatalf("ros install only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
 
@@ -161,7 +163,9 @@ func installAction(c *cli.Context) error {
 	cloudConfig := c.String("cloud-config")
 	if cloudConfig == "" {
 		if installType != "upgrade" {
-			// TODO: I wonder if its plausible to merge a new cloud-config into an existing one on upgrade - so for now, i'm only turning off the warning
+			// TODO: I wonder if its plausible to merge a new cloud-config into
+			// an existing one on upgrade - so for now, i'm only turning off
+			// the warning
 			log.Warn("Cloud-config not provided: you might need to provide cloud-config on boot with ssh_authorized_keys")
 		}
 	} else {
@@ -198,7 +202,11 @@ func installAction(c *cli.Context) error {
 	return nil
 }
 
-func runInstall(image, installType, cloudConfig, device, partition, statedir, kappend string, force, kexec, isoinstallerloaded, debug bool, savedImages []string) error {
+func runInstall(
+	image, installType, cloudConfig, device, partition, statedir, kappend string,
+	force, kexec, isoinstallerloaded, debug bool,
+	savedImages []string,
+) error {
 	fmt.Printf("Installing from %s\n", image)
 
 	if !force {
@@ -404,8 +412,7 @@ func mountBootIso(deviceName, deviceType string) error {
 	var outBuf, errBuf bytes.Buffer
 	cmd.Stdout = &outBuf
 	cmd.Stderr = &errBuf
-	err = cmd.Run()
-	if err != nil {
+	if err = cmd.Run(); err != nil {
 		return errors.Wrapf(err, "Tried and failed to mount %s: stderr output: %s", deviceName, errBuf.String())
 	}
 	log.Debugf("Mounted %s, output: %s", deviceName, outBuf.String())
@@ -413,24 +420,24 @@ func mountBootIso(deviceName, deviceType string) error {
 }
 
 func layDownOS(image, installType, cloudConfig, device, partition, statedir, kappend string, kexec bool) error {
-	// ENV == installType
-	//[[ "$ARCH" == "arm" && "$ENV" != "upgrade" ]] && ENV=arm
-
-	// image == rancher/os:v0.7.0_arm
-	// TODO: remove the _arm suffix (but watch out, its not always there..)
-	VERSION := image[strings.Index(image, ":")+1:]
+	colonPos := strings.Index(image, ":")
+	if colonPos < 0 {
+		return fmt.Errorf("cannot find version in image name: %q", image)
+	}
+	VERSION := image[colonPos+1:]
+	if VERSION == "" {
+		return fmt.Errorf("version empty in image name: %q", image)
+	}
 
 	var FILES []string
-	DIST := "/dist" //${DIST:-/dist}
-	//cloudConfig := SCRIPTS_DIR + "/conf/empty.yml" //${cloudConfig:-"${SCRIPTS_DIR}/conf/empty.yml"}
 	CONSOLE := "tty0"
-	baseName := "/mnt/new_img"
 	kernelArgs := "printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10" // console="+CONSOLE
 	if statedir != "" {
 		kernelArgs = kernelArgs + " rancher.state.directory=" + statedir
 	}
 
 	// unmount on trap
+	const baseName = "/mnt/new_img"
 	defer util.Unmount(baseName)
 
 	diskType := "msdos"
@@ -557,7 +564,8 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 	}
 
 	log.Debugf("installRancher")
-	if _, err := installRancher(baseName, DIST, kernelArgs+" "+kappend); err != nil {
+	const DIST = "/dist"
+	if err := installRancher(baseName, DIST, kernelArgs+" "+kappend); err != nil {
 		log.Errorf("%s", err)
 		return err
 	}
@@ -986,24 +994,45 @@ func different(existing, new string) (bool, error) {
 	return !bytes.Equal(data, newData), nil
 }
 
-func installRancher(baseName, DIST, kappend string) (string, error) {
+func fileExist(f string) (bool, error) {
+	if _, err := os.Stat(f); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
+}
+
+func installRancher(baseName, DIST, kappend string) error {
+	if runtime.GOARCH == "arm64" {
+		log.Info("reached installRancher(), running on arm64, probably on a raspberry pi")
+		log.Info("raspberry pi has a different boot files layout")
+		log.Info("so we will just return here without chaning anything")
+		return nil
+	}
 	// detect if there already is a linux-current.cfg, if so, move it to linux-previous.cfg,
 	currentCfg := filepath.Join(baseName, config.BootDir, "linux-current.cfg")
-	if _, err := os.Stat(currentCfg); !os.IsNotExist(err) {
+
+	if exist, err := fileExist(currentCfg); err != nil {
+		return fmt.Errorf("check %q: %s", currentCfg, err)
+	} else if exist {
 		existingCfg := filepath.Join(DIST, "linux-current.cfg")
 		// only remove previous if there is a change to the current
 		diff, err := different(currentCfg, existingCfg)
 		if err != nil {
-			return "", fmt.Errorf("compare new and old linux-current.cfg: %s", err)
+			return fmt.Errorf("compare new and old linux-current.cfg: %s", err)
 		}
 		if diff {
 			previousCfg := filepath.Join(baseName, config.BootDir, "linux-previous.cfg")
 			if _, err := os.Stat(previousCfg); !os.IsNotExist(err) {
 				if err := os.Remove(previousCfg); err != nil {
-					return currentCfg, err
+					return err
 				}
 			}
-			os.Rename(currentCfg, previousCfg)
+			if err := os.Rename(currentCfg, previousCfg); err != nil {
+				return fmt.Errorf("rename config failed: %s", err)
+			}
 			// TODO: now that we're parsing syslinux.cfg files, maybe we can delete old kernels and initrds
 		}
 	}
@@ -1028,19 +1057,19 @@ func installRancher(baseName, DIST, kappend string) (string, error) {
 	syslinuxDir := filepath.Join(baseName, config.BootDir, "syslinux")
 	if err := dfs.CopyFileOverwrite(isolinuxFile, syslinuxDir, "syslinux.cfg", true); err != nil {
 		log.Errorf("copy global syslinux.cfg: %s", err)
-		// TODO(h8liu): handle error?
-	} else {
-		log.Debugf("installRancher copy global syslinux.cfgS OK")
+		return fmt.Errorf("copy global syslinux.cfg: %s", err)
 	}
+	log.Debugf("global syslinux.cfg copied")
 
 	// The global.cfg INCLUDE - useful for over-riding the APPEND line
 	globalFile := filepath.Join(baseName, config.BootDir, "global.cfg")
-	if _, err := os.Stat(globalFile); !os.IsNotExist(err) {
-		err := ioutil.WriteFile(globalFile, []byte("APPEND "+kappend), 0644)
-		if err != nil {
-			log.Errorf("write (%s) %s", "global.cfg", err)
-			return currentCfg, err
+	if exist, err := fileExist(globalFile); err != nil {
+		return fmt.Errorf("check %q: %s", globalFile, err)
+	} else if exist {
+		if err := ioutil.WriteFile(globalFile, []byte("APPEND "+kappend), 0644); err != nil {
+			log.Errorf("write global.cfg: %s", err)
+			return fmt.Errorf("write global.cfg: %s", err)
 		}
 	}
-	return currentCfg, nil
+	return nil
 }

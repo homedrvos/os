@@ -193,7 +193,9 @@ func getLatestImage() (string, error) {
 }
 
 func osUpgrade(c *cli.Context) error {
-	if runtime.GOARCH != "amd64" {
+	switch runtime.GOARCH {
+	case "amd64", "arm64":
+	default:
 		log.Fatalf("ros upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
 
@@ -236,7 +238,11 @@ func osVersion(c *cli.Context) error {
 	return nil
 }
 
-func startUpgradeContainer(image string, stage, force, reboot, kexec, upgradeConsole, debug bool, kernelArgs string) error {
+func startUpgradeContainer(
+	image string,
+	stage, force, reboot, kexec, upgradeConsole, debug bool,
+	kernelArgs string,
+) error {
 	command := []string{
 		"-t", "upgrade",
 		"-r", config.Version,
@@ -300,8 +306,8 @@ func startUpgradeContainer(image string, stage, force, reboot, kexec, upgradeCon
 	}
 
 	if !stage {
-		// If there is already an upgrade container, delete it
-		// Up() should to this, but currently does not due to a bug
+		// If there is already an upgrade container, delete it.
+		// Up() should to this, but currently does not due to a bug.
 		if err := container.Delete(ctx, options.Delete{}); err != nil {
 			return err
 		}
