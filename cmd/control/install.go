@@ -106,7 +106,7 @@ func installAction(c *cli.Context) error {
 	}
 
 	if runtime.GOARCH != "amd64" {
-		log.Fatalf("ros install / upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
+		log.Fatalf("ros install only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
 
 	if c.Args().Present() {

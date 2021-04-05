@@ -194,7 +194,7 @@ func getLatestImage() (string, error) {
 
 func osUpgrade(c *cli.Context) error {
 	if runtime.GOARCH != "amd64" {
-		log.Fatalf("ros install / upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
+		log.Fatalf("ros upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
 
 	if found := checkGlobalCfg(); !found {
