@@ -420,15 +420,6 @@ func mountBootIso(deviceName, deviceType string) error {
 }
 
 func layDownOS(image, installType, cloudConfig, device, partition, statedir, kappend string, kexec bool) error {
-	colonPos := strings.Index(image, ":")
-	if colonPos < 0 {
-		return fmt.Errorf("cannot find version in image name: %q", image)
-	}
-	VERSION := image[colonPos+1:]
-	if VERSION == "" {
-		return fmt.Errorf("version empty in image name: %q", image)
-	}
-
 	var FILES []string
 	CONSOLE := "tty0"
 	kernelArgs := "printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10" // console="+CONSOLE
@@ -545,6 +536,12 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 	}
 
 	if installType == "amazon-ebs-pv" {
+		version := "unknown"
+		colonPos := strings.Index(image, ":")
+		if colonPos >= 0 {
+			version = image[colonPos+1:]
+		}
+
 		menu := install.BootVars{
 			BaseName: baseName,
 			BootDir:  config.BootDir,
@@ -554,7 +551,7 @@ func layDownOS(image, installType, cloudConfig, device, partition, statedir, kap
 				install.MenuEntry{
 					Name:       "BurmillaOS-current",
 					BootDir:    config.BootDir,
-					Version:    VERSION,
+					Version:    version,
 					KernelArgs: kernelArgs,
 					Append:     kappend,
 				},
