@@ -833,7 +833,7 @@ func upgradeBootloader(device, baseName, diskType string) error {
 	if _, err := os.Stat(backupSyslinuxDir); !os.IsNotExist(err) {
 		backupSyslinuxLdlinuxSys := filepath.Join(backupSyslinuxDir, "ldlinux.sys")
 		if _, err := os.Stat(backupSyslinuxLdlinuxSys); !os.IsNotExist(err) {
-			//need a privileged container that can chattr -i ldlinux.sys
+			// need a privileged container that can chattr -i ldlinux.sys
 			cmd := exec.Command("chattr", "-i", backupSyslinuxLdlinuxSys)
 			if err := cmd.Run(); err != nil {
 				log.Errorf("%s", err)
@@ -905,13 +905,13 @@ func installSyslinux(device, baseName, diskType string) error {
 	// alpine: /usr/share/syslinux/mbr.bin
 	if device == "/dev/" {
 		log.Debugf("installSyslinuxRaid(%s)", device)
-		//RAID - assume sda&sdb
-		//TODO: fix this - not sure how to detect what disks should have mbr - perhaps we need a param
+		// RAID - assume sda&sdb
+		// TODO: fix this - not sure how to detect what disks should have mbr - perhaps we need a param
 		//      perhaps just assume and use the devices that make up the raid - mdadm
 		device = "/dev/sda"
 		if err := setBootable(device, diskType); err != nil {
 			log.Errorf("setBootable(%s, %s): %s", device, diskType, err)
-			//return err
+			// return err
 		}
 		cmd := exec.Command("dd", "bs=440", "count=1", "if=/usr/share/syslinux/"+mbrFile, "of="+device)
 		if err := cmd.Run(); err != nil {
@@ -921,7 +921,7 @@ func installSyslinux(device, baseName, diskType string) error {
 		device = "/dev/sdb"
 		if err := setBootable(device, diskType); err != nil {
 			log.Errorf("setBootable(%s, %s): %s", device, diskType, err)
-			//return err
+			// return err
 		}
 		cmd = exec.Command("dd", "bs=440", "count=1", "if=/usr/share/syslinux/"+mbrFile, "of="+device)
 		if err := cmd.Run(); err != nil {
@@ -931,7 +931,7 @@ func installSyslinux(device, baseName, diskType string) error {
 	} else {
 		if err := setBootable(device, diskType); err != nil {
 			log.Errorf("setBootable(%s, %s): %s", device, diskType, err)
-			//return err
+			// return err
 		}
 		log.Debugf("installSyslinux(%s)", device)
 		cmd := exec.Command("dd", "bs=440", "count=1", "if=/usr/share/syslinux/"+mbrFile, "of="+device)
