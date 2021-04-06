@@ -162,7 +162,9 @@ func editSyslinux(c *cli.Context) error {
 		return errors.New("raspberry pi cannot use this command")
 	}
 
-	if found := checkGlobalCfg(); !found {
+	if found, err := checkGlobalCfg(); err != nil {
+		return fmt.Errorf("check global.cfg: %s", err)
+	} else if !found {
 		fmt.Fprintln(os.Stdout, "global.cfg not found")
 		return errors.New("global.cfg not found")
 	}

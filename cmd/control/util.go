@@ -77,10 +77,12 @@ func checkZfsBackingFS(driver, dir string) error {
 	return errors.Errorf("BackingFS: %s not match storage-driver: %s", dir, driver)
 }
 
-func checkGlobalCfg() bool {
-	_, err := os.Stat("/proc/1/root/boot/global.cfg")
-	if err == nil || os.IsExist(err) {
-		return true
+func checkGlobalCfg() (bool, error) {
+	if _, err := os.Stat("/proc/1/root/boot/global.cfg"); err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, nil
 	}
-	return false
+	return true, nil
 }
