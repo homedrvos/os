@@ -41,7 +41,7 @@ losetup -d "${PART1_DEVICE}" || /bin/true
 losetup --offset "${BOOT_PARTITION_OFFSET}" \
 	--sizelimit "${BOOT_PARTITION_BYTES}" \
 	"${PART1_DEVICE}" build/run.img
-mkfs.vfat -n RancherOS "${PART1_DEVICE}"
+mkfs.vfat -n RPI_BOOT "${PART1_DEVICE}"
 losetup -d "${PART1_DEVICE}"
 
 mkdir -p build/boot
@@ -62,12 +62,13 @@ echo "enable_uart=1" > build/boot/config.txt
 tree -a -L 4 build/boot
 df -h
 umount build/boot
+sync
 
 # partition #2 - Type=83 Linux
 PART2_DEVICE="$(losetup -f)"
 losetup -d "${PART2_DEVICE}" || /bin/true
 losetup --offset "${ROOT_PARTITION_OFFSET}" "${PART2_DEVICE}" build/run.img
-mkfs.ext4 -O ^has_journal -b 4096 -L rootfs "${PART2_DEVICE}"
+mkfs.ext4 -O ^has_journal -b 4096 -L RANCHER_STATE "${PART2_DEVICE}"
 losetup -d "${PART2_DEVICE}"
 
 # mount partitions as loopback devices
