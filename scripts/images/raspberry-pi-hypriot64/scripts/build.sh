@@ -59,6 +59,7 @@ echo "+dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 cgr
 echo "enable_uart=1" > build/boot/config.txt
 
 # show details
+tar -czf dist/rpi-boot-part.tgz -C build/boot .
 tree -a -L 4 build/boot
 df -h
 umount build/boot
@@ -84,7 +85,7 @@ tar -xf assets/rootfs_arm64.tar.gz -C build/root
 ## wireless support
 mkdir -p build/root/lib/firmware/brcm
 pushd build/root/lib/firmware/brcm
-BRCM_URL_BASE=https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/brcm/
+BRCM_URL_BASE=https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain/brcm
 curl -sL -o brcmfmac43430-sdio.bin "${BRCM_URL_BASE}/brcmfmac43430-sdio.bin"
 curl -sL -o brcmfmac43430-sdio.txt "${BRCM_URL_BASE}/brcmfmac43430-sdio.raspberrypi,3-model-b.txt"
 curl -sL -o brcmfmac43455-sdio.bin "${BRCM_URL_BASE}/brcmfmac43455-sdio.bin"
@@ -98,6 +99,7 @@ sed -i 's/io.docker.compose.rebuild: always/io.docker.compose.rebuild\: "false"/
 popd
 
 # show details
+tar -czf dist/rpi-root-part.tgz -C build/root .
 tree -a -L 4 build/root
 df -h
 umount build/root
