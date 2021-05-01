@@ -29,7 +29,7 @@ tar -C build/basefs -zxvf build/kernel.tar.gz
 tar -C build/basefs -zxvf build/rpi-bootloader.tar.gz
 
 # create image file with two partitions (FAT32, EXT4)
-dd if=/dev/zero of=build/run.img bs=1MiB count="$IMAGE_TOTAL_SIZE"
+truncate -s 2GB build/run.img
 echo -e "o\nn\np\n1\n${BOOT_PARTITION_START}\n+${BOOT_PARTITION_SECTORS}\nt\nc\nn\np\n2\n${ROOT_PARTITION_START}\n\nw\n" | fdisk build/run.img
 fdisk -l build/run.img
 ls -al build/run.img
