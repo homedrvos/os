@@ -201,7 +201,7 @@ func osUpgrade(c *cli.Context) error {
 			log.Fatalf("ros upgrade cannot be supported")
 		}
 	case "arm64":
-		log.Info("experimentao ros upgrade for arm64 platform")
+		log.Info("experimental ros upgrade for arm64 platform")
 	default:
 		log.Fatalf("ros upgrade only supported on 'amd64', not '%s'", runtime.GOARCH)
 	}
