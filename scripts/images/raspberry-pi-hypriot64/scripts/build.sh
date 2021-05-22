@@ -46,6 +46,7 @@ losetup -d "${PART1_DEVICE}"
 
 mkdir -p build/boot
 PART1_DEVICE="$(losetup -f)"
+sync
 mount -t vfat \
 	-o "loop=${PART1_DEVICE},offset=${BOOT_PARTITION_OFFSET}" \
        build/run.img build/boot
@@ -73,6 +74,7 @@ mkfs.ext4 -O ^has_journal -b 4096 -L RANCHER_STATE "${PART2_DEVICE}"
 losetup -d "${PART2_DEVICE}"
 
 # mount partitions as loopback devices
+sync
 mount -t ext4 \
 	-o "loop=${PART2_DEVICE},offset=${ROOT_PARTITION_OFFSET}" \
 	build/run.img build/root

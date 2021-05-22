@@ -11,9 +11,7 @@ if [ ! -f ./dist/artifacts/rootfs_arm64.tar.gz ]; then
 fi
 
 cp ./dist/artifacts/rootfs_arm64.tar.gz ./scripts/images/raspberry-pi-hypriot64/
-pushd ./scripts/images/raspberry-pi-hypriot64/
-./../../../.dapper
-popd
+(cd ./scripts/images/raspberry-pi-hypriot64/; dapper)
 
 cp ./scripts/images/raspberry-pi-hypriot64/dist/burmillaos-raspberry-pi64.zip ./dist/artifacts/
 
